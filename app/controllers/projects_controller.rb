@@ -4,9 +4,9 @@ class ProjectsController < ApplicationController
   before_action :verify_tenant
   # GET /projects
   # GET /projects.json
-  def index
-    @projects = Project.all
-  end
+  #def index
+   # @projects = Project.all
+  #end
 
   # GET /projects/1
   # GET /projects/1.json
