@@ -15,6 +15,7 @@ gem 'devise-bootstrap-views'
 gem 'jquery-rails'
 gem 'bootstrap-datepicker-rails'
 gem 'aws-sdk'
+gem 'stripe'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
