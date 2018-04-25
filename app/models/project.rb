@@ -2,7 +2,10 @@ class Project < ApplicationRecord
   belongs_to :tenant
   validates_uniqueness_of :title
   has_many :artifacts, dependent: :destroy
+  has_many :user_projects
+  has_many :users, through: :user_projects
   validate :free_plan_can_only_have_one_project
+  validate :deadline_after_now
   
   def free_plan_can_only_have_one_project
     if self.new_record? && (tenant.projects.count > 0) && (tenant.plan == 'free')
@@ -10,13 +13,27 @@ class Project < ApplicationRecord
     end
   end
   
-  def self.by_plan_and_tenant(tenant_id)
-    tenant = Tenant.find(tenant_id)
-    if tenant.plan == 'premium'
-      tenant.projects
-    else
-      tenant.projects.order(:id).limit(1)
+  def deadline_after_now
+    if expected_completion_date < Date.current
+      errors.add(:base, "must not be in the past")
     end
   end
-  
+    
+  #def self.by_plan_and_tenant(tenant_id)
+  def self.by_user_plan_and_tenant(tenant_id, user)
+    tenant = Tenant.find(tenant_id)
+    if tenant.plan == 'premium'
+      if user.is_admin?
+        tenant.projects
+      else
+        user.projects.where(tenant_id: tenant.id)
+      end
+    else
+      if user.is_admin?
+        tenant.projects.order(:id).limit(1)
+      else
+        user.projects.where(tenant_id: tenant.id).order(:id).limit(1)
+      end
+    end
+  end
 end

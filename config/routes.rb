@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
   
+  resources :user_projects
   resources :artifacts
   resources :tenants do
-    resources :projects
+    resources :projects do
+      get 'users', on: :member 
+      put 'add_user', on: :member 
+      end
   end
+  
   resources :members
   get 'home/index'
 
@@ -22,8 +27,7 @@ Rails.application.routes.draw do
     :passwords => "milia/passwords", 
   }
 
-
- root 'welcome#index'
-
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  match '/plan/edit' => 'tenants#edit', via: :get, as: :edit_plan
+  match '/plan/update' => 'tenants#update', via: [:put, :patch], as: :update_plan
+  
 end
